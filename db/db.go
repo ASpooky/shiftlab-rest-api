@@ -25,9 +25,9 @@ func NewDB() *gorm.DB {
 		os.Getenv("POSTGRES_PW"), os.Getenv("POSTGRES_HOST"),
 		os.Getenv("POSTGRES_PORT"), os.Getenv("POSTGRES_DB"))
 
-	url = fmt.Sprintf("postgres://%s:%s@%s:%s/%s", "shouta",
-		"shouta", "localhost",
-		"5434", "shouta")
+	/* url = fmt.Sprintf("postgres://%s:%s@%s:%s/%s", "shouta",
+	"shouta", "localhost",
+	"5434", "shouta") */
 	//なぜかos.Gotenvが働かない
 
 	db, err := gorm.Open(postgres.Open(url), &gorm.Config{}) //第二引数の空の構造体で初期化
