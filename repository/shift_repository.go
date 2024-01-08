@@ -10,10 +10,10 @@ import (
 
 type IShiftRepository interface {
 	GetAllShifts(shifts *[]model.Shift, userId uint) error
-	GetShiftByWorkspaceId(shift *[]model.Shift, userId uint, workspaceId uint) error
+	GetShiftByWorkspaceId(shift *[]model.Shift, workspaceId uint) error
 	CreateShift(shift *model.Shift) error
-	UpdateShift(shift *model.Shift, userId uint, shiftId uint) error
-	DeleteShift(userId uint, shiftId uint) error
+	UpdateShift(shift *model.Shift, shiftId uint) error
+	DeleteShift(shiftId uint) error
 }
 
 type shiftRepository struct {
@@ -25,14 +25,14 @@ func NewShiftRepository(db *gorm.DB) IShiftRepository {
 }
 
 func (sr shiftRepository) GetAllShifts(shifts *[]model.Shift, userId uint) error {
-	if err := sr.db.Joins("User").Where("user_id=?", userId).Order("created_at").Find(shifts).Error; err != nil {
+	if err := sr.db.Joins("Workspace").Where("user_id=?", userId).Order("created_at").Find(shifts).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (sr shiftRepository) GetShiftByWorkspaceId(shifts *[]model.Shift, userId uint, workspaceId uint) error {
-	if err := sr.db.Joins("User").Where("user_id=? AND workspace_id=?", userId, workspaceId).Order("created_at").Find(shifts).Error; err != nil {
+func (sr shiftRepository) GetShiftByWorkspaceId(shifts *[]model.Shift, workspaceId uint) error {
+	if err := sr.db.Where("workspace_id=?", workspaceId).Order("created_at").Find(shifts).Error; err != nil {
 		return err
 	}
 	return nil
@@ -45,8 +45,8 @@ func (sr shiftRepository) CreateShift(shift *model.Shift) error {
 	return nil
 }
 
-func (sr *shiftRepository) UpdateShift(shift *model.Shift, userId uint, shiftId uint) error {
-	result := sr.db.Model(shift).Clauses(clause.Returning{}).Where("id=? AND user_id=?", shiftId, userId).Updates(shift)
+func (sr *shiftRepository) UpdateShift(shift *model.Shift, shiftId uint) error {
+	result := sr.db.Model(shift).Clauses(clause.Returning{}).Where("id=?", shiftId).Updates(shift)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -56,8 +56,8 @@ func (sr *shiftRepository) UpdateShift(shift *model.Shift, userId uint, shiftId 
 	return nil
 }
 
-func (sr *shiftRepository) DeleteShift(userId uint, shiftId uint) error {
-	result := sr.db.Where("id=? AND user_id=?", shiftId, userId).Delete(&model.Shift{})
+func (sr *shiftRepository) DeleteShift(shiftId uint) error {
+	result := sr.db.Where("id=?", shiftId).Delete(&model.Shift{})
 	if result.Error != nil {
 		return result.Error
 	}

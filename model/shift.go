@@ -14,9 +14,7 @@ type Shift struct {
 	StartTime   time.Time `json:"start_time" gorm:"not null"`
 	EndTime     time.Time `json:"end_time" gorm:"not null"`
 	Workspace   Workspace `json:"workspace" gorm:"foreignKey:WorkspaceId; constraint:OnDelete:CASCADE"`
-	WorkspaceId uint      `json:"workspace_id" gorm:"not null`
-	User        User      `json:"user" gorm:"foreignKey:UserId; constraint:OnDelete:CASCADE"`
-	UserId      uint      `json:"user_id" gorm:"not null`
+	WorkspaceId uint      `json:"workspace_id" gorm:"not null"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdateAt    time.Time `json:"update_at"`
 }

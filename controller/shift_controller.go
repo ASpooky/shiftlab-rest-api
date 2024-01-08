@@ -40,12 +40,9 @@ func (sc *shiftController) GetAllShifts(c echo.Context) error {
 }
 
 func (sc *shiftController) GetShiftByWorkspaceId(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
 	id := c.Param("workspaceId")
 	workspaceId, _ := strconv.Atoi(id)
-	shiftRes, err := sc.su.GetShiftByWorkspaceId(uint(userId.(float64)), uint(workspaceId))
+	shiftRes, err := sc.su.GetShiftByWorkspaceId(uint(workspaceId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -53,15 +50,11 @@ func (sc *shiftController) GetShiftByWorkspaceId(c echo.Context) error {
 }
 
 func (sc *shiftController) CreateShift(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
-
 	shift := model.Shift{}
 	if err := c.Bind(&shift); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	shift.UserId = uint(userId.(float64))
+
 	shiftRes, err := sc.su.CreateShift(shift)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
@@ -70,9 +63,6 @@ func (sc *shiftController) CreateShift(c echo.Context) error {
 }
 
 func (sc *shiftController) UpdateShift(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
 	id := c.Param("shiftId")
 	shiftId, _ := strconv.Atoi(id)
 
@@ -80,7 +70,7 @@ func (sc *shiftController) UpdateShift(c echo.Context) error {
 	if err := c.Bind(&shift); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	shiftRes, err := sc.su.UpdateShift(shift, uint(userId.(float64)), uint(shiftId))
+	shiftRes, err := sc.su.UpdateShift(shift, uint(shiftId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -88,13 +78,11 @@ func (sc *shiftController) UpdateShift(c echo.Context) error {
 }
 
 func (sc *shiftController) DeleteShift(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
+
 	id := c.Param("shiftId")
 	shiftId, _ := strconv.Atoi(id)
 
-	err := sc.su.DeleteShift(uint(userId.(float64)), uint(shiftId))
+	err := sc.su.DeleteShift(uint(shiftId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

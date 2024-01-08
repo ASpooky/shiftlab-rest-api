@@ -7,10 +7,10 @@ import (
 
 type IShiftUsecase interface {
 	GetAllShifts(userId uint) ([]model.ShiftResponse, error)
-	GetShiftByWorkspaceId(userId uint, workspaceId uint) ([]model.ShiftResponse, error)
+	GetShiftByWorkspaceId(workspaceId uint) ([]model.ShiftResponse, error)
 	CreateShift(shift model.Shift) (model.ShiftResponse, error)
-	UpdateShift(shift model.Shift, userId uint, shiftId uint) (model.ShiftResponse, error)
-	DeleteShift(userId uint, shiftId uint) error
+	UpdateShift(shift model.Shift, shiftId uint) (model.ShiftResponse, error)
+	DeleteShift(shiftId uint) error
 }
 
 type shiftUsecase struct {
@@ -41,9 +41,9 @@ func (su *shiftUsecase) GetAllShifts(userId uint) ([]model.ShiftResponse, error)
 	return resShifts, nil
 }
 
-func (su *shiftUsecase) GetShiftByWorkspaceId(userId uint, workspaceId uint) ([]model.ShiftResponse, error) {
+func (su *shiftUsecase) GetShiftByWorkspaceId(workspaceId uint) ([]model.ShiftResponse, error) {
 	shifts := []model.Shift{}
-	if err := su.sr.GetShiftByWorkspaceId(&shifts, userId, workspaceId); err != nil {
+	if err := su.sr.GetShiftByWorkspaceId(&shifts, workspaceId); err != nil {
 		return nil, err
 	}
 	resShifts := []model.ShiftResponse{}
@@ -77,8 +77,8 @@ func (su *shiftUsecase) CreateShift(shift model.Shift) (model.ShiftResponse, err
 	return resShift, nil
 }
 
-func (su *shiftUsecase) UpdateShift(shift model.Shift, userId uint, shiftId uint) (model.ShiftResponse, error) {
-	if err := su.sr.UpdateShift(&shift, userId, shiftId); err != nil {
+func (su *shiftUsecase) UpdateShift(shift model.Shift, shiftId uint) (model.ShiftResponse, error) {
+	if err := su.sr.UpdateShift(&shift, shiftId); err != nil {
 		return model.ShiftResponse{}, err
 	}
 	resShift := model.ShiftResponse{
@@ -92,8 +92,8 @@ func (su *shiftUsecase) UpdateShift(shift model.Shift, userId uint, shiftId uint
 	return resShift, nil
 }
 
-func (su *shiftUsecase) DeleteShift(userId uint, shiftId uint) error {
-	if err := su.sr.DeleteShift(userId, shiftId); err != nil {
+func (su *shiftUsecase) DeleteShift(shiftId uint) error {
+	if err := su.sr.DeleteShift(shiftId); err != nil {
 		return err
 	}
 	return nil
